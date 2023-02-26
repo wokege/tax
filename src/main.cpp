@@ -34,8 +34,8 @@ int main()
         
         if (content_lower.starts_with("b!draken"))
         {
-            auto time = event.msg.get_creation_time() / 1000;
-            auto result = rate((long) time, 0, 11);
+            auto time = (event.msg.id >> 22) + 1420070400000ULL;
+            auto result = rate((long) time / 1000, 0, 11);
             auto msg = std::string("độ draken của ngày hôm nay hiện tại là **" + std::to_string(result) + "**/**10**");
             event.reply(msg);
             return;
