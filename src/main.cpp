@@ -24,6 +24,7 @@ int main()
     bot.on_message_create([](const dpp::message_create_t& event) {
         auto content = event.msg.content;
         auto content_lower = content;
+        auto time = (event.msg.id >> 22) + 1420070400000ULL;
         std::transform(
                 std::execution::par_unseq,
                 content_lower.begin(),
@@ -34,12 +35,19 @@ int main()
         
         if (content_lower.starts_with("b!draken"))
         {
-            auto time = (event.msg.id >> 22) + 1420070400000ULL;
             auto result = rate((long) time / 1000, 0, 11);
             auto msg = std::string("độ draken của ngày hôm nay hiện tại là **" + std::to_string(result) + "**/**10**");
             event.reply(msg);
             return;
-        };
+        }
+
+        if (content_lower.starts_with("b!draken"))
+        {
+            auto result = 11 - rate((long) time / 1000, 0, 11);
+            auto msg = std::string("độ briten của ngày hôm nay hiện tại là **" + std::to_string(result) + "**/**10**");
+            event.reply(msg);
+            return;
+        }
     });
 
     bot.on_ready([&bot](const dpp::ready_t& event) {
