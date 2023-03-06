@@ -41,11 +41,21 @@ int main()
             return;
         }
 
-        if (content_lower.starts_with("b!draken"))
+        if (content_lower.starts_with("b!briten"))
         {
             auto result = 11 - rate((long) time / 1000, 0, 11);
             auto msg = std::string("độ briten của ngày hôm nay hiện tại là **" + std::to_string(result) + "**/**10**");
             event.reply(msg);
+            return;
+        }
+
+        if (content_lower.starts_with("b!hailong"))
+        {
+            auto uid = event.msg.author.id.operator uint64_t();
+            auto seed = uid + time / 1000;
+            auto result = 11 - rate((long) seed / 1000, 0, 11);
+            auto msg = std::string("độ hài lòng của <@" + std::to_string(uid) + "> là **" + std::to_string(result) + "**/**10**");
+            event.reply(msg, true);
             return;
         }
     });
