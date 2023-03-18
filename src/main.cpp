@@ -4,8 +4,11 @@
 #include "execution"
 #include "cctype"
 
+using dpp::snowflake;
+
 std::locale botLocale("C");
 const std::string quantam_id = "b!quantam_1";
+const std::string quantam_ctxmenu_name = "Quan tâm";
 
 int rate(long unixTimestampInSeconds, int min = 0, int max = 11)
 {
@@ -15,9 +18,9 @@ int rate(long unixTimestampInSeconds, int min = 0, int max = 11)
     return (int) result + min;
 }
 
-dpp::message createQuantam(dpp::snowflake channel_id, dpp::snowflake author_id)
+dpp::message create_quantam(snowflake author_id, snowflake channel_id, dpp::message::message_ref ref)
 {
-    return dpp::message(
+    auto res = dpp::message(
             channel_id,
             std::string("<@") + std::to_string(author_id) + "> đã thể hiện sự quan tâm."
     )
@@ -29,6 +32,19 @@ dpp::message createQuantam(dpp::snowflake channel_id, dpp::snowflake author_id)
                                     .set_id(quantam_id)
                     )
             );
+
+    if (!ref.message_id.empty()) {
+        res = res
+                .set_reference(ref.message_id, ref.guild_id, ref.channel_id, false)
+                .set_allowed_mentions(
+                        true,
+                        false,
+                        false,
+                        false,
+                        std::vector<dpp::snowflake>{}, std::vector<dpp::snowflake>{}
+                );
+    }
+    return res;
 }
 
 int main()
@@ -79,22 +95,13 @@ int main()
         if (content_lower.starts_with("b!quantam") || content_lower.starts_with("b!qt"))
         {
             auto ref = event.msg.message_reference;
-            auto msg = createQuantam(event.msg.channel_id, event.msg.author.id);
+            auto msg = create_quantam(event.msg.author.id, event.msg.channel_id, ref);
             if (ref.message_id.empty())
             {
                 event.reply(msg, true);
             }
             else
             {
-                msg = msg
-                        .set_reference(ref.message_id, ref.guild_id, ref.channel_id, false)
-                        .set_allowed_mentions(
-                                true,
-                                false,
-                                false,
-                                false,
-                                std::vector<dpp::snowflake> {}, std::vector<dpp::snowflake> {}
-                        );
                 bot.message_create(msg);
             }
             return;
@@ -106,17 +113,7 @@ int main()
         {
             auto command = event.command;
             auto author_id = command.get_issuing_user().id;
-            auto ref = command.msg.message_reference;
-            auto msg = createQuantam(event.command.channel_id, event.command.get_issuing_user().id);
-            msg = msg
-                    .set_reference(ref.message_id, ref.guild_id, ref.channel_id,false)
-                    .set_allowed_mentions(
-                        false,
-                        false,
-                        false,
-                        false,
-                        std::vector<dpp::snowflake> { author_id }, std::vector<dpp::snowflake> {}
-                    );
+            auto msg = create_quantam(author_id, command.channel_id, command.msg.message_reference);
             msg = msg.set_content(std::string("<@") + std::to_string(author_id) + "> cũng đã thể hiện sự quan tâm.");
             event.reply();
             bot.message_create(msg);
@@ -129,10 +126,36 @@ int main()
         asprintf(&discrim_string, "%04d", me.discriminator);
         bot.log(
                 dpp::loglevel::ll_info,
-                "We're ready! Logged in as " + me.username + "#" + std::string(discrim_string)
+                "We're ready! Logged in as " + me.username + "#" + std::string(discrim_string) + '.'
         );
         delete[] discrim_string;
-    });
 
+        if (dpp::run_once<struct register_bot_commands>())
+        {
+            bot.global_command_create(
+                dpp::slashcommand()
+                    .set_type(dpp::ctxm_message)
+                    .set_name(quantam_ctxmenu_name)
+                    .set_application_id(bot.me.id)
+            );
+        }
+    });
+    
+    bot.on_message_context_menu([&bot](const dpp::message_context_menu_t& event) {
+        if (event.command.get_command_name() == quantam_ctxmenu_name)
+        {
+            auto author_id = event.command.get_issuing_user().id;
+            auto command = event.command;
+            dpp::message::message_ref dummy_ref;
+            dummy_ref.channel_id = command.channel_id;
+            dummy_ref.guild_id = event.command.guild_id;
+            dummy_ref.message_id = event.ctx_message.id;
+            auto msg = create_quantam(author_id, command.channel_id, dummy_ref);
+            msg = msg.set_content(std::string("<@") + std::to_string(author_id) + "> cũng đã thể hiện sự quan tâm.");
+            
+            event.reply(dpp::message("đợi tí").set_flags(dpp::m_ephemeral));
+            bot.message_create(msg);
+        }
+    });
     bot.start(dpp::st_wait);
 }
