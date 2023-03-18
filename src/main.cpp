@@ -76,7 +76,7 @@ int main()
             return;
         }
         
-        if (content_lower.starts_with("b!quantam"))
+        if (content_lower.starts_with("b!quantam") || content_lower.starts_with("b!qt"))
         {
             auto ref = event.msg.message_reference;
             auto msg = createQuantam(event.msg.channel_id, event.msg.author.id);
