@@ -151,8 +151,6 @@ int main()
             dummy_ref.guild_id = event.command.guild_id;
             dummy_ref.message_id = event.ctx_message.id;
             auto msg = create_quantam(author_id, command.channel_id, dummy_ref);
-            msg = msg.set_content(std::string("<@") + std::to_string(author_id) + "> cũng đã thể hiện sự quan tâm.");
-            
             event.reply(dpp::message("đợi tí").set_flags(dpp::m_ephemeral));
             bot.message_create(msg);
         }
