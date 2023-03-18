@@ -79,16 +79,27 @@ int main()
         if (content_lower.starts_with("b!quantam"))
         {
             auto msg = createQuantam(event.msg.channel_id, event.msg.author.id);
-            event.reply(msg);
+            event.reply(msg, true);
             return;
         }
     });
 
-    bot.on_button_click([](const dpp::button_click_t & event) {
+    bot.on_button_click([&bot](const dpp::button_click_t& event) {
         if (event.custom_id == quantam_id)
         {
+            auto command = event.command;
+            auto author_id = command.get_issuing_user().id;
             auto msg = createQuantam(event.command.channel_id, event.command.get_issuing_user().id);
-            event.reply(msg);
+            msg = msg
+                    .set_reference(
+                        command.msg.message_reference.message_id,
+                        command.msg.message_reference.guild_id,
+                        command.msg.message_reference.channel_id,
+                        false
+                    );
+            msg = msg.set_content(std::string("<@") + std::to_string(author_id) + "> cũng đã thể hiện sự quan tâm.");
+            event.reply();
+            bot.message_create(msg);
         }
     });
     
