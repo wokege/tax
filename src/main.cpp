@@ -38,7 +38,7 @@ int main()
     bot.intents |= dpp::i_message_content;
     bot.on_log(dpp::utility::cout_logger());
     
-    bot.on_message_create([](const dpp::message_create_t& event) {
+    bot.on_message_create([&bot](const dpp::message_create_t& event) {
         auto content = event.msg.content;
         auto content_lower = content;
         auto time = (event.msg.id >> 22) + 1420070400000ULL;
@@ -78,8 +78,25 @@ int main()
         
         if (content_lower.starts_with("b!quantam"))
         {
+            auto ref = event.msg.message_reference;
             auto msg = createQuantam(event.msg.channel_id, event.msg.author.id);
-            event.reply(msg, true);
+            if (ref.message_id.empty())
+            {
+                event.reply(msg, true);
+            }
+            else
+            {
+                msg = msg
+                        .set_reference(ref.message_id, ref.guild_id, ref.channel_id, false)
+                        .set_allowed_mentions(
+                                true,
+                                false,
+                                false,
+                                false,
+                                std::vector<dpp::snowflake> {}, std::vector<dpp::snowflake> {}
+                        );
+                bot.message_create(msg);
+            }
             return;
         }
     });
@@ -89,14 +106,10 @@ int main()
         {
             auto command = event.command;
             auto author_id = command.get_issuing_user().id;
+            auto ref = command.msg.message_reference;
             auto msg = createQuantam(event.command.channel_id, event.command.get_issuing_user().id);
             msg = msg
-                    .set_reference(
-                        command.msg.message_reference.message_id,
-                        command.msg.message_reference.guild_id,
-                        command.msg.message_reference.channel_id,
-                        false
-                    )
+                    .set_reference(ref.message_id, ref.guild_id, ref.channel_id,false)
                     .set_allowed_mentions(
                         false,
                         false,
