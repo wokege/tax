@@ -5,6 +5,7 @@
 #include "cctype"
 
 std::locale botLocale("C");
+const std::string quantam_id = "b!quantam_1";
 
 int rate(long unixTimestampInSeconds, int min = 0, int max = 11)
 {
@@ -12,6 +13,22 @@ int rate(long unixTimestampInSeconds, int min = 0, int max = 11)
     std::mt19937 engine (unixTimestampInSeconds / cycle);
     auto result = (engine() % (unsigned long) (max - min + 1));
     return (int) result + min;
+}
+
+dpp::message createQuantam(dpp::snowflake channel_id, dpp::snowflake author_id)
+{
+    return dpp::message(
+            channel_id,
+            std::string("<@") + std::to_string(author_id) + "> đã thể hiện sự quan tâm."
+    )
+            .add_component(
+                    dpp::component().add_component(
+                            dpp::component().set_label("Thể hiện sự quan tâm của bạn")
+                                    .set_type(dpp::cot_button)
+                                    .set_style(dpp::cos_success)
+                                    .set_id(quantam_id)
+                    )
+            );
 }
 
 int main()
@@ -58,10 +75,32 @@ int main()
             event.reply(msg, true);
             return;
         }
+        
+        if (content_lower.starts_with("b!quantam"))
+        {
+            auto msg = createQuantam(event.msg.channel_id, event.msg.author.id);
+            event.reply(msg);
+            return;
+        }
     });
 
+    bot.on_button_click([](const dpp::button_click_t & event) {
+        if (event.custom_id == quantam_id)
+        {
+            auto msg = createQuantam(event.command.channel_id, event.command.get_issuing_user().id);
+            event.reply(msg);
+        }
+    });
+    
     bot.on_ready([&bot](const dpp::ready_t& event) {
-        bot.log(dpp::loglevel::ll_info, "we're ready!");
+        auto me = bot.me;
+        auto discrim_string = new char[5];
+        asprintf(&discrim_string, "%04d", me.discriminator);
+        bot.log(
+                dpp::loglevel::ll_info,
+                "We're ready! Logged in as " + me.username + "#" + std::string(discrim_string)
+        );
+        delete[] discrim_string;
     });
 
     bot.start(dpp::st_wait);
