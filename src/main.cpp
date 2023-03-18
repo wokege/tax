@@ -96,6 +96,13 @@ int main()
                         command.msg.message_reference.guild_id,
                         command.msg.message_reference.channel_id,
                         false
+                    )
+                    .set_allowed_mentions(
+                        false,
+                        false,
+                        false,
+                        true,
+                        std::vector<dpp::snowflake> { author_id }, std::vector<dpp::snowflake> {}
                     );
             msg = msg.set_content(std::string("<@") + std::to_string(author_id) + "> cũng đã thể hiện sự quan tâm.");
             event.reply();
