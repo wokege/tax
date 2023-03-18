@@ -101,7 +101,7 @@ int main()
                         false,
                         false,
                         false,
-                        true,
+                        false,
                         std::vector<dpp::snowflake> { author_id }, std::vector<dpp::snowflake> {}
                     );
             msg = msg.set_content(std::string("<@") + std::to_string(author_id) + "> cũng đã thể hiện sự quan tâm.");
