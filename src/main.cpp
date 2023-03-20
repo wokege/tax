@@ -198,7 +198,7 @@ int main()
         {
             auto msg = create_quantam(author_id, command.channel_id, dummy_ref, false);
             msg.allowed_mentions.replied_user = true;
-            event.reply(dpp::message("đợi tí").set_flags(dpp::m_ephemeral));
+            event.reply(dpp::message("cứ từ từ").set_flags(dpp::m_ephemeral));
             bot.message_create(msg);
             return;
         }
