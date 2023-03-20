@@ -30,16 +30,10 @@ dpp::message create_quantam(snowflake author_id, snowflake channel_id, dpp::mess
             .add_component(
                 dpp::component()
                     .add_component(
-                        dpp::component().set_label("Thể hiện sự quan tâm của bạn")
+                        dpp::component().set_label(quantam ? "Thể hiện sự quan tâm của bạn" : "Yêu cầu tìm ra người đã hỏi")
                                 .set_type(dpp::cot_button)
-                                .set_style(dpp::cos_success)
-                                .set_id(quantam_id)
-                    )
-                    .add_component(
-                        dpp::component().set_label("Yêu cầu tìm ra người đã hỏi")
-                                .set_type(dpp::cot_button)
-                                .set_style(dpp::cos_danger)
-                                .set_id(khongquantam_id)
+                                .set_style(quantam ? dpp::cos_success : dpp::cos_danger)
+                                .set_id(quantam ? quantam_id : khongquantam_id)
                     )
             );
 
