@@ -8,7 +8,9 @@ using dpp::snowflake;
 
 std::locale botLocale("C");
 const std::string quantam_id = "b!quantam_1";
+const std::string khongquantam_id = "b!khongquantam_1";
 const std::string quantam_ctxmenu_name = "Quan tâm";
+const std::string khongquantam_ctxmenu_name = "Không quan tâm";
 
 int rate(long unixTimestampInSeconds, int min = 0, int max = 11)
 {
@@ -18,18 +20,26 @@ int rate(long unixTimestampInSeconds, int min = 0, int max = 11)
     return (int) result + min;
 }
 
-dpp::message create_quantam(snowflake author_id, snowflake channel_id, dpp::message::message_ref ref)
+dpp::message create_quantam(snowflake author_id, snowflake channel_id, dpp::message::message_ref ref, bool quantam = true)
 {
     auto res = dpp::message(
             channel_id,
-            std::string("<@") + std::to_string(author_id) + "> đã thể hiện sự quan tâm."
+            std::string("<@") + std::to_string(author_id) + "> đã "
+                + (quantam ? "thể hiện sự quan tâm." : "đéo hỏi.")
     )
             .add_component(
-                    dpp::component().add_component(
-                            dpp::component().set_label("Thể hiện sự quan tâm của bạn")
-                                    .set_type(dpp::cot_button)
-                                    .set_style(dpp::cos_success)
-                                    .set_id(quantam_id)
+                dpp::component()
+                    .add_component(
+                        dpp::component().set_label("Thể hiện sự quan tâm của bạn")
+                                .set_type(dpp::cot_button)
+                                .set_style(dpp::cos_success)
+                                .set_id(quantam_id)
+                    )
+                    .add_component(
+                        dpp::component().set_label("Yêu cầu tìm ra người đã hỏi")
+                                .set_type(dpp::cot_button)
+                                .set_style(dpp::cos_danger)
+                                .set_id(khongquantam_id)
                     )
             );
 
@@ -91,6 +101,7 @@ int main()
             event.reply(msg, true);
             return;
         }
+
         
         if (content_lower.starts_with("b!quantam") || content_lower.starts_with("b!qt"))
         {
@@ -106,17 +117,42 @@ int main()
             }
             return;
         }
+        
+        if (content_lower.starts_with("b!khongquantam") || content_lower.starts_with("b!kqt"))
+        {
+            auto ref = event.msg.message_reference;
+            auto msg = create_quantam(event.msg.author.id, event.msg.channel_id, ref, false);
+            if (ref.message_id.empty())
+            {
+                event.reply(msg, true);
+            }
+            else
+            {
+                bot.message_create(msg);
+            }
+            return;
+        }
     });
 
     bot.on_button_click([&bot](const dpp::button_click_t& event) {
+        auto command = event.command;
+        auto author_id = command.get_issuing_user().id;
         if (event.custom_id == quantam_id)
         {
-            auto command = event.command;
-            auto author_id = command.get_issuing_user().id;
             auto msg = create_quantam(author_id, command.channel_id, command.msg.message_reference);
             msg = msg.set_content(std::string("<@") + std::to_string(author_id) + "> cũng đã thể hiện sự quan tâm.");
             event.reply();
             bot.message_create(msg);
+            return;
+        }
+        
+        if (event.custom_id == khongquantam_id)
+        {
+            auto msg = create_quantam(author_id, command.channel_id, command.msg.message_reference, false);
+            msg = msg.set_content(std::string("<@") + std::to_string(author_id) + "> cũng đã đéo hỏi.");
+            event.reply();
+            bot.message_create(msg);
+            return;
         }
     });
     
@@ -138,22 +174,39 @@ int main()
                     .set_name(quantam_ctxmenu_name)
                     .set_application_id(bot.me.id)
             );
+
+            bot.global_command_create(
+                    dpp::slashcommand()
+                            .set_type(dpp::ctxm_message)
+                            .set_name(khongquantam_ctxmenu_name)
+                            .set_application_id(bot.me.id)
+            );
         }
     });
     
     bot.on_message_context_menu([&bot](const dpp::message_context_menu_t& event) {
+        auto author_id = event.command.get_issuing_user().id;
+        auto command = event.command;
+        dpp::message::message_ref dummy_ref;
+        dummy_ref.channel_id = command.channel_id;
+        dummy_ref.guild_id = event.command.guild_id;
+        dummy_ref.message_id = event.ctx_message.id;
         if (event.command.get_command_name() == quantam_ctxmenu_name)
         {
-            auto author_id = event.command.get_issuing_user().id;
-            auto command = event.command;
-            dpp::message::message_ref dummy_ref;
-            dummy_ref.channel_id = command.channel_id;
-            dummy_ref.guild_id = event.command.guild_id;
-            dummy_ref.message_id = event.ctx_message.id;
             auto msg = create_quantam(author_id, command.channel_id, dummy_ref);
             msg.allowed_mentions.replied_user = true;
             event.reply(dpp::message("đợi tí").set_flags(dpp::m_ephemeral));
             bot.message_create(msg);
+            return;
+        }
+
+        if (event.command.get_command_name() == khongquantam_ctxmenu_name)
+        {
+            auto msg = create_quantam(author_id, command.channel_id, dummy_ref, false);
+            msg.allowed_mentions.replied_user = true;
+            event.reply(dpp::message("đợi tí").set_flags(dpp::m_ephemeral));
+            bot.message_create(msg);
+            return;
         }
     });
     bot.start(dpp::st_wait);
