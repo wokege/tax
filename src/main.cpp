@@ -135,6 +135,7 @@ int main()
         {
             auto msg = create_quantam(author_id, command.channel_id, command.msg.message_reference);
             msg = msg.set_content(std::string("<@") + std::to_string(author_id) + "> cũng đã thể hiện sự quan tâm.");
+            msg.allowed_mentions.replied_user = true;
             event.reply();
             bot.message_create(msg);
             return;
@@ -144,6 +145,7 @@ int main()
         {
             auto msg = create_quantam(author_id, command.channel_id, command.msg.message_reference, false);
             msg = msg.set_content(std::string("<@") + std::to_string(author_id) + "> cũng đã đéo hỏi.");
+            msg.allowed_mentions.replied_user = true;
             event.reply();
             bot.message_create(msg);
             return;
