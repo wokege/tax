@@ -1,4 +1,4 @@
-FROM alpine:3.17.0 as prereq
+FROM alpine:3.17.3 as prereq
 RUN apk add --no-cache libstdc++ libgcc
 
 FROM prereq as build
