@@ -97,6 +97,17 @@ int main()
             return;
         }
 
+        if (content_lower.starts_with("b!khonghailong"))
+        {
+            auto uid = event.msg.author.id.operator uint64_t();
+            auto seed = uid / 1000 + time / 1000;
+            auto result = rate((long) seed, 0, 11);
+            auto msg = std::string("độ không hài lòng của <@" + std::to_string(uid) + "> là **" + std::to_string(result) + "**/**10** ");
+            event.reply(msg, true);
+            return;
+        }
+
+        
         
         if (content_lower.starts_with("b!quantam") || content_lower.starts_with("b!qt"))
         {
