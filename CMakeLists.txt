@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.17)
 project(tax VERSION 1.0 DESCRIPTION "Randomly bubbles")
 
-add_executable(${PROJECT_NAME} src/main.cpp src/rate.cpp src/quantam.cpp src/quantam.hpp)
+add_executable(${PROJECT_NAME} src/main.cpp src/rate.cpp src/rate.hpp src/response.cpp src/response.hpp src/quantam.hpp src/quantam.cpp src/hard.hpp src/hard.cpp)
 
 find_package(PkgConfig REQUIRED)
 pkg_search_module(dpp REQUIRED dpp)

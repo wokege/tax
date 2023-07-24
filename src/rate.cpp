@@ -5,6 +5,7 @@
 #include "random"
 #include "execution"
 #include "dpp/dpp.h"
+#include "response.hpp"
 
 using std::string;
 
@@ -16,46 +17,60 @@ int rate(long unixTimestampInSeconds, int min = 0, int max = 11)
     return (int) result + min;
 }
 
-bool handleRNG(const dpp::message_create_t& event, const string& content, const string& content_lower) {
-    auto time = (event.msg.id >> 22) + 1420070400000ULL;
-    
-    if (content_lower.starts_with("b!draken"))
+namespace tax
+{
+    PresetCommand DrakenCommand
     {
-        auto result = rate((long) time / 1000, 0, 11);
-        auto msg = std::string("độ draken của ngày hôm nay hiện tại là **" + std::to_string(result) + "**/**10**");
-        event.reply(msg);
-        return true;
-    }
-
-    if (content_lower.starts_with("b!briten"))
+        .command = std::vector<string> { "draken" },
+        .enable_ctxmenu = false,
+        .enable_button = false,
+        .follow_reference = false,
+        .format_message = [](const dpp::message_create_t& ev, dpp::cluster& bot, const string& content, const string& content_lower) {
+            auto time = (ev.msg.id >> 22) + 1420070400000ULL;
+            auto result = rate((long) time / 1000, 0, 11);
+            return std::string("độ draken của ngày hôm nay hiện tại là **" + std::to_string(result) + "**/**10**");
+        }
+    };
+    PresetCommand BritenCommand
     {
-        auto result = 11 - rate((long) time / 1000, 0, 11);
-        auto msg = std::string("độ briten của ngày hôm nay hiện tại là **" + std::to_string(result) + "**/**10**");
-        event.reply(msg);
-        return true;
-    }
-
-    if (content_lower.starts_with("b!hailong"))
+        .command = std::vector<string> { "briten" },
+        .enable_ctxmenu = false,
+        .enable_button = false,
+        .follow_reference = false,
+        .format_message = [](const dpp::message_create_t& ev, dpp::cluster& bot, const string& content, const string& content_lower) {
+            auto time = (ev.msg.id >> 22) + 1420070400000ULL;
+            auto result = 11 - rate((long) time / 1000, 0, 11);
+            return std::string("độ briten của ngày hôm nay hiện tại là **" + std::to_string(result) + "**/**10**");
+        }
+    };
+    PresetCommand HailongCommand
     {
-        auto uid = event.msg.author.id.operator uint64_t();
-        auto seed = uid / 1000 + time / 1000;
-        auto result = 11 - rate((long) seed, 0, 11);
-        auto msg = std::string("độ hài lòng của <@" + std::to_string(uid) + "> là **" + std::to_string(result) + "**/**10** ");
-        event.reply(msg, true);
-        return true;
-    }
-
-    if (content_lower.starts_with("b!khonghailong"))
+        .command = std::vector<string> { "hailong" },
+        .enable_ctxmenu = false,
+        .enable_button = false,
+        .follow_reference = false,
+        .format_message = [](const dpp::message_create_t& ev, dpp::cluster& bot, const string& content, const string& content_lower) {
+            auto time = (ev.msg.id >> 22) + 1420070400000ULL;
+            auto uid = ev.msg.author.id.operator uint64_t();
+            auto seed = uid / 1000 + time / 1000;
+            auto result = 11 - rate((long) seed, 0, 11);
+            return std::string("độ hài lòng của <@" + std::to_string(uid) + "> là **" + std::to_string(result) + "**/**10** ");
+        }
+    };
+    PresetCommand KhonghailongCommand
     {
-        auto uid = event.msg.author.id.operator uint64_t();
-        auto seed = uid / 1000 + time / 1000;
-        auto result = rate((long) seed, 0, 11);
-        auto msg = std::string("độ không hài lòng của <@" + std::to_string(uid) + "> là **" + std::to_string(result) + "**/**10** ");
-        event.reply(msg, true);
-        return true;
-    }
-    
-    return false;
+        .command = std::vector<string> { "khonghailong" },
+        .enable_ctxmenu = false,
+        .enable_button = false,
+        .follow_reference = false,
+        .format_message = [](const dpp::message_create_t& ev, dpp::cluster& bot, const string& content, const string& content_lower) {
+            auto time = (ev.msg.id >> 22) + 1420070400000ULL;
+            auto uid = ev.msg.author.id.operator uint64_t();
+            auto seed = uid / 1000 + time / 1000;
+            auto result = rate((long) seed, 0, 11);
+            return std::string("độ không hài lòng của <@" + std::to_string(uid) + "> là **" + std::to_string(result) + "**/**10** ");
+        }
+    };
 }
 
 #endif
