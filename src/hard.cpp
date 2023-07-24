@@ -6,7 +6,7 @@ namespace tax
 {
     PresetCommand HardCommand
     {
-        .command = std::vector<string> { "hard", "kho" },
+        .command = std::vector<string> { "hard", "kho", "khó" },
         .ctxmenu_name = "Thể hiện sự bất lực",
         .button_id = "b!hard_1",
         .button_text = "Thể hiện sự bất lực của bạn",
