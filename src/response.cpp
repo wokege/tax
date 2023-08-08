@@ -1,6 +1,8 @@
 #include "response.hpp"
+#include "string"
 
 using dpp::snowflake;
+using std::string;
 
 dpp::message PresetCommand::create_message(const std::string& content, snowflake author_id, snowflake channel_id, dpp::message::message_ref ref) const
 {
@@ -62,6 +64,12 @@ void PresetCommand::handle_click(const dpp::button_click_t &event, dpp::cluster 
     }
 }
 
+string context_responses[] = {
+    "từ từ, đợi tí",
+    "bình tĩnh",
+    "chờ tí gì căng"
+};
+
 void PresetCommand::handle_context(const dpp::message_context_menu_t &event, dpp::cluster &bot)
 {
     auto author_id = event.command.get_issuing_user().id;
@@ -75,7 +83,10 @@ void PresetCommand::handle_context(const dpp::message_context_menu_t &event, dpp
         std::string content = this->format_context ? this->format_context(event, bot) : "";
         auto msg = create_message(content, author_id, c.channel_id, dummy_ref);
         msg.allowed_mentions.replied_user = true;
-        event.reply(dpp::message("từ từ, đợi tí").set_flags(dpp::m_ephemeral));
+        
+        auto index = event.ctx_message.id % std::size(context_responses);
+        
+        event.reply(dpp::message(context_responses[index]).set_flags(dpp::m_ephemeral));
         bot.message_create(msg);
     }
 }

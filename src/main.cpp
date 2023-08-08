@@ -1,6 +1,7 @@
 #include "rate.hpp"
 #include "quantam.hpp"
 #include "hard.hpp"
+#include "wish.hpp"
 #include "response.hpp"
 #include <dpp/dpp.h>
 #include "string"
@@ -18,7 +19,8 @@ int main()
     std::vector<PresetCommand> Commands { 
         HardCommand,
         QuantamCommand, KhongquantamCommand,
-        DrakenCommand, BritenCommand, HailongCommand, KhonghailongCommand
+        DrakenCommand, BritenCommand, HailongCommand, KhonghailongCommand,
+        WishCommand
     };
     
     auto token = getenv("DISCORD_TOKEN");
