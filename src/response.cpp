@@ -43,7 +43,7 @@ void PresetCommand::handle_message(const dpp::message_create_t &event, dpp::clus
     auto msg = this->create_message(c, event.msg.author.id, event.msg.channel_id, ref);
     if (ref.message_id.empty() || !this->follow_reference)
     {
-        event.reply(msg, true);
+        event.reply(msg);
     }
     else
     {
