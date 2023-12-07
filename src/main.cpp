@@ -74,17 +74,14 @@ int main()
     
     bot.on_ready([&bot, &Commands](const dpp::ready_t& event) {
         auto me = bot.me;
-        auto discrim_string = new char[5];
-        asprintf(&discrim_string, "%04d", me.discriminator);
         bot.log(
                 dpp::loglevel::ll_info,
-                "We're ready! Logged in as " + me.username + "#" + std::string(discrim_string) + '.'
+                "We're ready! Logged in as " + me.format_username() + '.'
         );
-        delete[] discrim_string;
 
         if (dpp::run_once<struct register_bot_commands>())
         {
-            for (auto cmd : Commands)
+            for (const auto& cmd : Commands)
             {
                 if (cmd.enable_ctxmenu)
                 {
