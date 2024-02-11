@@ -8,6 +8,7 @@
 #include "random"
 #include "execution"
 #include "vector"
+#include "sorry.hpp"
 
 using dpp::snowflake;
 using namespace tax;
@@ -16,11 +17,11 @@ std::locale botLocale("C");
 
 int main()
 {
-    std::vector<PresetCommand> Commands { 
+    std::vector<PresetCommand> Commands {
         HardCommand,
         QuantamCommand, KhongquantamCommand,
         DrakenCommand, BritenCommand, HailongCommand, KhonghailongCommand,
-        WishCommand
+        WishCommand, SorryCommand
     };
     
     auto token = getenv("DISCORD_TOKEN");
